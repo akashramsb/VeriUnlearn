@@ -6,25 +6,26 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState([]);
   const [proof, setProof] = useState(null);
+  const [proofHistory, setProofHistory] = useState([]);
 
-  // 🔥 Proof Generator (mock)
+  // 🔥 Improved Proof Generator
   const generateProof = (userId) => {
-  const hash = btoa(userId + Date.now()).slice(0, 16); // base64-like hash
-  const timestamp = new Date().toLocaleString();
+    const hash = btoa(userId + Date.now()).slice(0, 16);
+    const timestamp = new Date().toLocaleString();
 
-  return {
-    user: userId,
-    hash: hash,
-    status: "Verified",
-    time: timestamp,
+    return {
+      user: userId,
+      hash: hash,
+      status: "Verified",
+      time: timestamp,
+    };
   };
-};
 
   const handleDelete = async () => {
     setLoading(true);
     setResponse("");
 
-    // 🔴 MOCK BACKEND (replace later)
+    // 🔴 MOCK BACKEND
     setTimeout(() => {
       if (userId.trim() === "") {
         setResponse("⚠️ Please enter a valid User ID");
@@ -32,13 +33,17 @@ function App() {
         const message = `✅ User ${userId} successfully deleted`;
         setResponse(message);
 
-        // Add to logs
+        // Logs
         setLogs((prevLogs) => [message, ...prevLogs]);
 
-        // Generate proof
+        // Proof
         const proofData = generateProof(userId);
         setProof(proofData);
+
+        // Proof History
+        setProofHistory((prev) => [proofData, ...prev]);
       }
+
       setLoading(false);
     }, 1500);
   };
@@ -63,7 +68,7 @@ function App() {
 
         <div className="grid grid-cols-3 gap-6">
 
-          {/* Delete User Card */}
+          {/* Delete User */}
           <div className="bg-white p-5 rounded-xl shadow">
             <h2 className="font-semibold mb-3">Delete User</h2>
 
@@ -83,40 +88,33 @@ function App() {
             </button>
           </div>
 
-          {/* Proof Card */}
+          {/* Proof */}
           <div className="bg-white p-5 rounded-xl shadow border-l-4 border-green-500">
-  <h2 className="font-semibold mb-3">Verification Proof</h2>
+            <h2 className="font-semibold mb-3">Verification Proof</h2>
 
-  {proof ? (
-    <div className="text-sm space-y-2">
+            {proof ? (
+              <div className="text-sm space-y-2">
+                <p><strong>User ID:</strong> {proof.user}</p>
 
-      <p>
-        <span className="font-medium">User ID:</span> {proof.user}
-      </p>
+                <p>
+                  <strong>Hash:</strong><br />
+                  <span className="text-xs text-gray-600 break-all">
+                    {proof.hash}
+                  </span>
+                </p>
 
-      <p>
-        <span className="font-medium">Hash:</span>
-        <br />
-        <span className="text-xs text-gray-600 break-all">
-          {proof.hash}
-        </span>
-      </p>
+                <p><strong>Timestamp:</strong> {proof.time}</p>
 
-      <p>
-        <span className="font-medium">Timestamp:</span> {proof.time}
-      </p>
+                <p className="text-green-600 font-medium">
+                  ✔ {proof.status}
+                </p>
+              </div>
+            ) : (
+              <p className="text-gray-600">No proof generated yet</p>
+            )}
+          </div>
 
-      <p className="text-green-600 font-medium">
-        ✔ {proof.status}
-      </p>
-
-    </div>
-  ) : (
-    <p className="text-gray-600">No proof generated yet</p>
-  )}
-</div>
-
-          {/* Logs Card */}
+          {/* Logs */}
           <div className="bg-white p-5 rounded-xl shadow">
             <h2 className="font-semibold mb-3">Logs</h2>
 
@@ -138,7 +136,7 @@ function App() {
 
         </div>
 
-        {/* Response Section */}
+        {/* Response */}
         <div className="mt-6 bg-white p-5 rounded-xl shadow">
           <h2 className="font-semibold mb-3">Response</h2>
 
@@ -146,6 +144,31 @@ function App() {
             <p className="text-[#8458a1] animate-pulse">Processing...</p>
           ) : (
             <p>{response}</p>
+          )}
+        </div>
+
+        {/* Proof History */}
+        <div className="mt-6 bg-white p-5 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Proof History</h2>
+
+          {proofHistory.length === 0 ? (
+            <p className="text-gray-600">No proofs generated yet</p>
+          ) : (
+            <div className="space-y-4">
+              {proofHistory.map((p, index) => (
+                <div
+                  key={index}
+                  className="border rounded-lg p-3 text-sm bg-gray-50"
+                >
+                  <p><strong>User:</strong> {p.user}</p>
+                  <p className="break-all">
+                    <strong>Hash:</strong> {p.hash}
+                  </p>
+                  <p><strong>Time:</strong> {p.time}</p>
+                  <p className="text-green-600"><strong>{p.status}</strong></p>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
