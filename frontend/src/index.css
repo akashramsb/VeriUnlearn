@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Forced layout fix if Tailwind fails */
+:root {
+  background-color: #020617;
+  color: #f8fafc;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: start;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #020617;
+}
+
+#root {
+  width: 100%;
+}
